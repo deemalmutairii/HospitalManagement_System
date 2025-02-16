@@ -1,32 +1,60 @@
-from Modules.patient import Patient
-from Modules.doctor import Doctor
-from Modules.appointment import Appointment
+import os
+from dbmanger.PostgresHelper import PostgresHelper
+from dbmanger.MongoHelper import MongoHelper
+from modules.PatientModule import PatientModule
+from modules.DoctorModule import DoctorModule
+from modules.AppointmentModule import AppointmentModule
 
-# Example: Adding a new patient
-Patient("John Doe", "+1234567890", "123 Main St", 30).add()
 
-# Example: Retrieve and print patient information
-patient_id = Patient.get_id("+1234567890")
-if patient_id:
-    name, phone, address, age = Patient.get_info(patient_id)
-    print(f"Patient Info: {name}, {phone}, {address}, {age}")
+def display_main_menu():
+    print("\nWelcome to the Hospital Management System!")
+    print("1. Patient Operations")
+    print("2. Doctor Operations")
+    print("3. Appointment Operations")
+    print("4. Exit")
 
-# Example: Adding a new doctor
-Doctor("Dr. Alice Johnson", "+1123456789", "Cardiology").add()
 
-# Example: Retrieve and print doctor information
-doctor_id = 1  # Assuming doctor ID is known
-doctor_info = Doctor.get_info(doctor_id)
-if doctor_info:
-    name, phone, specialization = doctor_info
-    print(f"Doctor Info: {name}, {phone}, {specialization}")
+def main():
+    try:
+        db_type = os.getenv("DB_TYPE", "POSTGRES")
+        if db_type == 'POSTGRES':
+            db_helper = PostgresHelper(
+                host=os.getenv('POSTGRES_HOST', 'localhost'),
+                db_name=os.getenv('POSTGRES_DB', 'hospital_db'),
+                user=os.getenv('POSTGRES_USER', 'postgres_user'),
+                password=os.getenv('POSTGRES_PASSWORD', 'securepassword'),
+                port=int(os.getenv('POSTGRES_PORT', 5432))
+            )
+        elif db_type == 'MONGO':
+            db_helper = MongoHelper(
+                uri=os.getenv('MONGO_URI', "mongodb://localhost:27017/"),
+                db_name=os.getenv('MONGO_DB_NAME', "hospital")
+            )
+        else:
+            raise ValueError("Unsupported DB Type")
 
-# Example: Scheduling an appointment
-Appointment(patient_id=1, doctor_id=1, appointment_date="2025-03-01 10:00:00", status="scheduled").schedule()
+        patient_module = PatientModule(db_helper)
+        doctor_module = DoctorModule(db_helper)
+        appointment_module = AppointmentModule(db_helper)
 
-# Example: Retrieve and print appointment information
-appointment_id = 1  # Assuming appointment ID is known
-appointment_info = Appointment.get_info(appointment_id)
-if appointment_info:
-    patient_id, doctor_id, appointment_date, status = appointment_info
-    print(f"Appointment Info: Patient ID: {patient_id}, Doctor ID: {doctor_id}, Date: {appointment_date}, Status: {status}")
+        while True:
+            display_main_menu()
+            choice = input("Choose an option: ")
+            if choice == "1":
+                handle_patient_operations(patient_module)
+            elif choice == "2":
+                handle_doctor_operations(doctor_module)
+            elif choice == "3":
+                handle_appointment_operations(appointment_module)
+            elif choice == "4":
+                print("Exiting... Goodbye!")
+                break
+            else:
+                print("Invalid option. Try again.")
+
+    except Exception as e:
+        print(f"An error occurred: {e}")
+
+
+if __name__ == "__main__":
+    main()

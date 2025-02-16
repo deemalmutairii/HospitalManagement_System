@@ -1,14 +1,10 @@
-# Database table names
-PATIENTS_TABLE = "patients"
-DOCTORS_TABLE = "doctors"
-APPOINTMENTS_TABLE = "appointments"
+# Database configuration constants
+DB_NAME = "hospital_db"
+POSTGRES_USER = "postgres_user"
+POSTGRES_PASSWORD = "securepassword"
+POSTGRES_HOST = "localhost"
+POSTGRES_PORT = 5432
 
-# Status options
-STATUS_ACTIVE = "active"
-STATUS_INACTIVE = "inactive"
-STATUS_PENDING = "pending"
-
-# Gender options
-GENDER_MALE = "Male"
-GENDER_FEMALE = "Female"
-GENDER_OTHER = "Other"
+# MongoDB configuration
+MONGO_URI = "mongodb://localhost:27017/"
+MONGO_DB_NAME = "hospital"
