@@ -1,5 +1,5 @@
 -- Drop existing tables
-DROP TABLE IF EXISTS appointments;
+DROP TABLE IF EXISTS patients;
 
 
 -- Create the patients table
